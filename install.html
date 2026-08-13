@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#111111">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+  <meta name="apple-mobile-web-app-title" content="Trading Dashboard">
+
+  <link rel="manifest" href="manifest.json">
+
+  <link rel="apple-touch-icon" href="icons/icon-180.png">
+
+  <title>Install Trading Dashboard</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: #111111;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+
+    .install-container {
+      width: 100%;
+      max-width: 400px;
+      padding: 35px 25px;
+      text-align: center;
+      background: #1e1e1e;
+      border-radius: 10px;
+    }
+
+    .install-container h1 {
+      margin: 0 0 15px;
+      font-size: 26px;
+    }
+
+    .install-container p {
+      margin: 0 0 25px;
+      color: #cccccc;
+      line-height: 1.5;
+    }
+
+    #installBtn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      background: #28a745;
+      color: #ffffff;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    #installBtn:hover {
+      opacity: 0.85;
+    }
+
+    #installBtn:active {
+      transform: scale(0.98);
+    }
+
+    #iosInstructions {
+      display: none;
+      margin-top: 20px;
+      padding: 15px;
+      background: #292929;
+      border-radius: 6px;
+      color: #dddddd;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    #browserMessage {
+      display: none;
+      margin-top: 20px;
+      color: #cccccc;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="install-container">
+
+    <h1>Trading Dashboard</h1>
+
+    <p id="installMessage">
+      Install the app on your device to continue.
+    </p>
+
+    <button id="installBtn">
+      Install App
+    </button>
+
+    <div id="iosInstructions">
+
+      <strong>Install on iPhone</strong>
+
+      <br><br>
+
+      Tap the <strong>Share</strong> button in your browser.
+
+      <br>
+
+      Select <strong>Add to Home Screen</strong>.
+
+      <br>
+
+      Then tap <strong>Add</strong> to install the app.
+
+    </div>
+
+    <div id="browserMessage">
+
+      Use your browser's installation option to install the app.
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    const installBtn = document.getElementById("installBtn");
+    const installMessage = document.getElementById("installMessage");
+    const iosInstructions = document.getElementById("iosInstructions");
+    const browserMessage = document.getElementById("browserMessage");
+
+    let deferredPrompt = null;
+
+
+    /* CHECK WHETHER THE APP IS ALREADY INSTALLED */
+
+    function isAppInstalled() {
+
+      return (
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true
+      );
+
+    }
+
+
+    /* IF ALREADY INSTALLED, OPEN THE NORMAL APP */
+
+    if (isAppInstalled()) {
+
+      window.location.replace("./index.html");
+
+    }
+
+
+    /* REGISTER SERVICE WORKER */
+
+    if ("serviceWorker" in navigator) {
+
+      window.addEventListener("load", () => {
+
+        navigator.serviceWorker.register("./service-worker.js")
+          .then(registration => {
+
+            console.log(
+              "Service Worker registered:",
+              registration.scope
+            );
+
+          })
+          .catch(error => {
+
+            console.error(
+              "Service Worker registration failed:",
+              error
+            );
+
+          });
+
+      });
+
+    }
+
+
+    /* DETECT IOS */
+
+    const isIOS =
+      /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      (
+        navigator.platform === "MacIntel" &&
+        navigator.maxTouchPoints > 1
+      );
+
+
+    /* IOS INSTALLATION */
+
+    if (isIOS && !isAppInstalled()) {
+
+      installBtn.style.display = "none";
+
+      iosInstructions.style.display = "block";
+
+      installMessage.textContent =
+        "Follow the instructions below to install the app.";
+
+    }
+
+
+    /* CAPTURE ANDROID / CHROMIUM INSTALL PROMPT */
+
+    window.addEventListener("beforeinstallprompt", event => {
+
+      event.preventDefault();
+
+      deferredPrompt = event;
+
+      installBtn.style.display = "block";
+
+      browserMessage.style.display = "none";
+
+    });
+
+
+    /* INSTALL BUTTON */
+
+    installBtn.addEventListener("click", async () => {
+
+      if (!deferredPrompt) {
+
+        browserMessage.style.display = "block";
+
+        browserMessage.textContent =
+          "Open your browser's menu and select the option to install or add this app to your device.";
+
+        return;
+
+      }
+
+
+      deferredPrompt.prompt();
+
+
+      const { outcome } = await deferredPrompt.userChoice;
+
+
+      console.log(
+        "Installation result:",
+        outcome
+      );
+
+
+      deferredPrompt = null;
+
+    });
+
+
+    /* APP SUCCESSFULLY INSTALLED */
+
+    window.addEventListener("appinstalled", () => {
+
+      deferredPrompt = null;
+
+      window.location.replace("./index.html");
+
+    });
+
+  </script>
+
+</body>
+
+</html>

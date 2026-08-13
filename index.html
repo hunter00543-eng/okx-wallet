@@ -1,0 +1,3350 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Тrading dashboard</title>
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+
+<meta name="theme-color" content="#111111">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Trading Dashboard">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+
+<script src="https://s3.tradingview.com/tv.js"></script>
+
+
+
+<style>
+
+
+
+body{
+
+  margin:0;
+
+  font-family:Arial;
+
+  background:#111;
+
+  color:#fff;
+
+}
+
+
+
+*{
+
+  box-sizing:border-box;
+
+}
+
+
+
+#loginPage{
+
+  display:flex;
+
+  justify-content:center;
+
+  align-items:center;
+
+  min-height:100vh;
+
+  padding:15px;
+
+}
+
+
+
+.login-box{
+
+  background:#1e1e1e;
+
+  padding:30px;
+
+  border-radius:8px;
+
+  width:100%;
+
+  max-width:400px;
+
+  text-align:center;
+
+}
+
+
+
+.login-box input{
+
+  width:100%;
+
+  padding:12px;
+
+  margin:8px 0;
+
+  border:none;
+
+  border-radius:5px;
+
+  background:#2a2a2a;
+
+  color:#fff;
+
+}
+
+
+
+.login-box button{
+
+  width:100%;
+
+  padding:12px;
+
+  border:none;
+
+  border-radius:5px;
+
+  cursor:pointer;
+
+  margin-top:10px;
+
+  background:#28a745;
+
+  color:#fff;
+
+}
+
+
+
+.login-error{
+
+  color:red;
+
+  margin-top:10px;
+
+  min-height:20px;
+
+}
+
+
+
+/* NEW: password toggle button */
+
+.toggle-password{
+
+  width:100%;
+
+  padding:8px;
+
+  margin-top:0;
+
+  background:#333;
+
+  color:#fff;
+
+  border:none;
+
+  border-radius:5px;
+
+  cursor:pointer;
+
+  font-size:13px;
+
+}
+
+
+
+#dashboardPage{
+
+  display:none;
+
+  flex-direction:column;
+
+  padding:20px;
+
+}
+
+
+
+.top-buttons{
+
+display:flex;
+
+flex-direction:column;
+
+gap:10px;
+
+}
+
+
+
+.top-buttons button{
+
+width:120px;
+
+padding:10px;
+
+border:none;
+
+border-radius:5px;
+
+background:#28a745;
+
+color:#fff;
+
+cursor:pointer;
+
+transition:0.2s;
+
+}
+
+
+
+.top-buttons button:hover{
+
+opacity:0.8;
+
+}
+
+
+
+.top-buttons button:active{
+
+transform:scale(0.98);
+
+}
+
+
+
+
+
+.username{
+
+  font-weight:bold;
+
+}
+
+
+
+.balance{
+
+  margin-top:10px;
+
+  color:#0f0;
+
+}
+
+
+
+.order-panel,
+
+.trading-dashboard{
+
+  background:#1e1e1e;
+
+  padding:15px;
+
+  border-radius:8px;
+
+  margin-bottom:20px;
+
+}
+
+
+
+.order-panel input{
+
+  width:100%;
+
+  padding:10px;
+
+  margin-top:5px;
+
+  margin-bottom:10px;
+
+  border:none;
+
+  border-radius:5px;
+
+  background:#2a2a2a;
+
+  color:#fff;
+
+}
+
+
+
+.input-wrapper{
+
+  position:relative;
+
+  width:100%;
+
+}
+
+
+
+.clear-btn{
+
+  position:absolute;
+
+  right:10px;
+
+  top:50%;
+
+  transform:translateY(-50%);
+
+  background:none;
+
+  border:none;
+
+  color:#999;
+
+  cursor:pointer;
+
+  font-size:18px;
+
+  display:none;
+
+}
+
+
+
+.clear-btn:hover{
+
+  color:#fff;
+
+}
+
+
+
+.order-actions{
+
+  display:flex;
+
+  gap:10px;
+
+  margin-top:15px;
+
+  flex-wrap:wrap;
+
+}
+
+
+
+.order-actions button{
+
+  flex:1;
+
+  padding:10px;
+
+  border:none;
+
+  border-radius:5px;
+
+  background:#f7931a;
+
+  color:white;
+
+  cursor:pointer;
+
+  transition:0.2s;
+
+}
+
+
+
+.order-actions button:hover{
+
+  opacity:0.8;
+
+}
+
+
+
+.panel{
+
+  display:none;
+
+  margin-top:10px;
+
+}
+
+
+
+.coin-selector{
+
+  display:inline-block;
+
+  background:#2a2a2a;
+
+  padding:8px 12px;
+
+  border-radius:5px;
+
+  cursor:pointer;
+
+  margin-top:10px;
+
+}
+
+
+
+.coin-dropdown{
+
+  display:none;
+
+  position:absolute;
+
+  background:#1e1e1e;
+
+  margin-top:5px;
+
+  border-radius:5px;
+
+  min-width:100px;
+
+  max-height:200px;
+
+  overflow-y:auto;
+
+  z-index:10;
+
+}
+
+
+
+.coin-dropdown div{
+
+  padding:8px 10px;
+
+  cursor:pointer;
+
+}
+
+
+
+.coin-dropdown div:hover{
+
+  background:#28a745;
+
+}
+
+
+
+.modal-overlay{
+
+  position:fixed;
+
+  top:0;
+
+  left:0;
+
+  width:100%;
+
+  height:100%;
+
+  background:rgba(0,0,0,0.7);
+
+  display:none;
+
+  justify-content:center;
+
+  align-items:center;
+
+  z-index:1000;
+
+  padding:15px;
+
+}
+
+
+
+.modal{
+
+  background:#1e1e1e;
+
+  padding:20px;
+
+  border-radius:8px;
+
+  width:100%;
+
+  max-width:400px;
+
+  text-align:center;
+
+}
+
+
+
+.modal button{
+
+  margin-top:15px;
+
+  padding:10px 20px;
+
+  border:none;
+
+  border-radius:5px;
+
+  cursor:pointer;
+
+  background:#28a745;
+
+  color:#fff;
+
+}
+
+
+
+table{
+
+  width:100%;
+
+  border-collapse:collapse;
+
+  margin-top:10px;
+
+}
+
+
+
+th,td{
+
+  padding:8px;
+
+  text-align:center;
+
+  border:1px solid #333;
+
+}
+
+
+
+thead{
+
+  background:#222;
+
+}
+
+
+
+.profit{
+
+  color:#0f0;
+
+}
+
+
+
+.loss{
+
+  color:#f00;
+
+}
+
+
+
+/* ===========================
+
+DEPOSIT PAGE
+
+=========================== */
+
+
+
+.deposit-header{
+
+display:flex;
+
+align-items:center;
+
+gap:15px;
+
+margin-bottom:25px;
+
+}
+
+
+
+.back-btn{
+
+width:42px;
+
+height:42px;
+
+border:none;
+
+border-radius:5px;
+
+background:#28a745;
+
+color:#fff;
+
+cursor:pointer;
+
+font-size:22px;
+
+transition:0.2s;
+
+}
+
+
+
+.back-btn:hover{
+
+opacity:0.8;
+
+}
+
+
+
+.back-btn:active{
+
+transform:scale(0.98);
+
+}
+
+
+
+.deposit-methods{
+
+display:flex;
+
+flex-direction:column;
+
+gap:15px;
+
+}
+
+
+
+.deposit-method-btn{
+
+width:100%;
+
+padding:15px;
+
+border:none;
+
+border-radius:8px;
+
+background:#2a2a2a;
+
+color:#fff;
+
+cursor:pointer;
+
+font-size:16px;
+
+transition:0.2s;
+
+}
+
+
+
+.deposit-method-btn:hover{
+
+background:#28a745;
+
+}
+
+
+
+.deposit-method-btn:active{
+
+transform:scale(0.98);
+
+}
+
+
+
+/* ===========================
+
+BANK DEPOSIT PAGE
+
+=========================== */
+
+
+
+.deposit-card{
+
+
+
+background:#1e1e1e;
+
+border-radius:8px;
+
+padding:20px;
+
+
+
+}
+
+
+
+.details-box{
+
+
+
+background:#2a2a2a;
+
+border-radius:8px;
+
+padding:15px;
+
+margin:20px 0;
+
+
+
+}
+
+
+
+.details-box p{
+
+
+
+margin:12px 0;
+
+word-break:break-word;
+
+
+
+}
+
+#cryptoWalletAddress{
+
+width:100%;
+box-sizing:border-box;
+overflow-wrap:anywhere;
+word-break:break-word;
+white-space:normal;
+
+}
+
+
+.deposit-action-btn{
+
+
+
+width:100%;
+
+padding:14px;
+
+border:none;
+
+border-radius:8px;
+
+background:#28a745;
+
+color:#fff;
+
+cursor:pointer;
+
+font-size:16px;
+
+transition:0.2s;
+
+
+
+}
+
+
+
+.deposit-action-btn:hover{
+
+
+
+opacity:0.85;
+
+
+
+}
+
+
+
+.deposit-action-btn:active{
+
+
+
+transform:scale(0.98);
+
+
+
+}
+
+
+
+/* ===========================
+
+CARD DEPOSIT
+
+=========================== */
+
+
+
+.deposit-select{
+
+
+
+width:100%;
+
+margin-top:20px;
+
+padding:14px;
+
+border:none;
+
+border-radius:8px;
+
+background:#2a2a2a;
+
+color:#fff;
+
+font-size:16px;
+
+outline:none;
+
+cursor:pointer;
+
+
+
+}
+
+
+
+.deposit-select option{
+
+
+
+background:#2a2a2a;
+
+color:#fff;
+
+
+
+}
+
+
+
+
+
+/* ===========================
+
+CARD CODE PAGE
+
+=========================== */
+
+
+
+.deposit-input{
+
+
+
+width:100%;
+
+padding:14px;
+
+margin-bottom:20px;
+
+border:none;
+
+border-radius:8px;
+
+background:#2a2a2a;
+
+color:#fff;
+
+font-size:16px;
+
+outline:none;
+
+
+
+}
+
+
+
+.deposit-action-btn:disabled{
+
+
+
+background:#555;
+
+cursor:not-allowed;
+
+opacity:0.7;
+
+
+
+}
+
+
+
+
+
+
+
+@media (max-width:768px){
+
+
+
+  body{
+
+    overflow-x:hidden;
+
+  }
+
+
+
+  #dashboardPage{
+
+    padding:10px;
+
+  }
+
+
+
+ 
+  .user-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    width:100%;
+    margin-bottom:20px;
+
+  }
+
+
+
+  .order-actions{
+
+    flex-direction:column;
+
+  }
+
+
+
+  .order-actions button{
+
+    width:100%;
+
+  }
+
+
+
+  table{
+
+    font-size:12px;
+
+    display:block;
+
+    overflow-x:auto;
+
+    white-space:nowrap;
+
+  }
+
+
+
+  th,td{
+
+    padding:6px;
+
+  }
+
+
+
+  #liveChart{
+
+    height:250px !important;
+
+  }
+
+
+
+  input,
+
+  button{
+
+    font-size:16px;
+
+  }
+
+}
+
+
+
+</style>
+
+</head>
+
+
+
+<body>
+
+
+
+<!-- LOGIN PAGE -->
+
+<div id="loginPage">
+
+  <div class="login-box">
+
+    <h2>Login</h2>
+
+
+
+    <input id="loginUsername" placeholder="Username">
+
+
+
+    <input id="loginPassword" type="password" placeholder="Password">
+
+ <button type="button" class="toggle-password" id="togglePasswordBtn">Show password</button>
+
+
+
+<button id="loginBtn">Login</button>
+
+
+
+    <div id="loginError" class="login-error"></div>
+
+  </div>
+
+</div>
+
+
+
+<!-- DASHBOARD -->
+
+<div id="dashboardPage">
+
+
+
+<h2>OKX Wallet</h2>
+
+
+
+<div class="user-top">
+
+<div>
+
+<div class="username" id="displayUsername"></div>
+
+<div class="balance" id="walletBalance"></div>
+
+</div>
+
+
+
+<div class="top-buttons">
+
+<button id="depositBtn">Deposit</button>
+
+<button id="logoutBtn">Logout</button>
+
+</div>
+
+</div>
+
+
+
+
+
+<div class="trading-dashboard">
+
+
+
+<h3>Trading Dashboard</h3>
+
+
+
+<div id="liveChart" style="height:500px;"></div>
+
+
+
+</div>
+
+
+
+<div class="order-panel">
+
+
+
+<h3>Order panel</h3>
+
+
+
+<label>Amount (USD)</label>
+
+
+
+<div class="input-wrapper">
+
+<input id="price" type="number" placeholder="Enter the price amount">
+
+<button class="clear-btn" id="clearPriceBtn">×</button>
+
+</div>
+
+
+
+<label>Wallet address</label>
+
+<input id="walletAddress" placeholder="Insert wallet address">
+
+
+
+<label>Quantity</label>
+
+
+
+<div class="input-wrapper">
+
+<input id="quantity" type="number" placeholder="Enter quantity">
+
+<button class="clear-btn" id="clearQuantityBtn">×</button>
+
+</div>
+
+
+
+<div style="margin-top:5px;">
+
+<div class="coin-selector" id="coinSelector">BTC</div>
+
+<div class="coin-dropdown" id="coinDropdown"></div>
+
+</div>
+
+
+
+<div class="order-actions">
+
+<button id="withdrawBtn">Withdraw</button>
+
+<button id="sendBtn">Send</button>
+
+</div>
+
+
+
+<div id="walletDisplay" class="panel"></div>
+
+<div id="balanceDisplay" class="panel"></div>
+
+
+
+</div>
+
+</div>
+
+
+
+<!-- DEPOSIT PAGE -->
+
+<div id="depositPage" style="display:none; flex-direction:column; padding:20px;">
+
+
+
+    <div class="deposit-header">
+
+        <button id="depositBackBtn" class="back-btn">←</button>
+
+        <h2>Choose your prefered deposite method below</h2>
+
+    </div>
+
+
+
+    <div class="deposit-methods">
+
+
+
+        <button id="bankDepositBtn" class="deposit-method-btn">
+
+            Bank Deposit
+
+        </button>
+
+
+
+        <button id="cardDepositBtn" class="deposit-method-btn">
+
+            Card Deposit 
+
+        </button>
+
+
+
+        <button id="cryptoDepositBtn" class="deposit-method-btn">
+
+Cryptocurrency Deposit
+
+        </button>
+
+
+
+    </div>
+
+
+
+</div>
+
+
+
+
+
+<!-- BANK DEPOSIT PAGE -->
+
+<div id="bankDepositPage" style="display:none; flex-direction:column; padding:20px;">
+
+
+
+    <div class="deposit-header">
+
+        <button id="bankBackBtn" class="back-btn">←</button>
+
+        <h2>Bank deposit</h2>
+
+    </div>
+
+
+
+    <div class="deposit-card">
+
+
+
+        <h3>Copy the bank details below.</h3>
+
+
+
+        <div id="bankDetailsBox" class="details-box">
+
+
+
+            <p><strong>Bank Name:</strong> FIRST BANK</p>
+
+
+
+            <p><strong>Account Name:</strong> OKIKPO ODALO</p>
+
+
+
+            <p><strong>Account Number:</strong> 1234567890</p>
+
+
+
+            <p><strong>Sort Code:</strong> 8285444</p>
+
+
+
+        </div>
+
+
+
+        <button id="copyBankBtn" class="deposit-action-btn">
+
+            Copy
+
+        </button>
+
+
+
+    </div>
+
+
+
+</div>
+
+
+
+
+
+<!-- CARD DEPOSIT PAGE -->
+
+<div id="cardDepositPage" style="display:none; flex-direction:column; padding:20px;">
+
+
+
+    <div class="deposit-header">
+
+
+
+        <button id="cardBackBtn" class="back-btn">←</button>
+
+
+
+    <h2>Gift card deposit</h2>
+
+
+
+    </div>
+
+
+
+    <div class="deposit-card">
+
+
+
+<h3>Select card type</h3>
+
+
+
+        <select id="cardTypeSelect" class="deposit-select">
+
+
+
+            <option value="">Choose Card</option>
+
+
+
+            <option>Steam</option>
+
+            <option>Apple Gift Card</option>
+
+            <option>Google Play</option>
+
+            <option>Amazon</option>
+
+            <option>Xbox</option>
+
+            <option>PlayStation</option>
+
+            <option>Razer Gold</option>
+
+            <option>Visa Gift Card</option>
+
+            <option>Mastercard Gift Card</option>
+
+            <option>American Express Gift Card</option>
+
+            <option>eBay</option>
+
+            <option>Walmart</option>
+
+            <option>Target</option>
+
+            <option>Sephora</option>
+
+            <option>Nike</option>
+
+            <option>Roblox</option>
+
+            <option>Fortnite / Epic Games</option>
+
+            <option>Vanilla Gift Card</option>
+
+            <option>Macy's</option>
+
+            <option>Nordstrom</option>
+
+            <option>Best Buy</option>
+
+            <option>Home Depot</option>
+
+            <option>CVS</option>
+
+            <option>Walgreens</option>
+
+            <option>Netflix</option>
+
+            <option>Spotify</option>
+
+            <option>Uber</option>
+
+            <option>Airbnb</option>
+
+            <option>Visa Prepaid</option>
+
+            <option>Mastercard Prepaid</option>
+
+
+
+        </select>
+
+
+
+    </div>
+
+
+
+</div>
+
+
+
+<!-- CARD CODE SUBMISSION PAGE -->
+
+<div id="cardCodePage" style="display:none; flex-direction:column; padding:20px;">
+
+
+
+<div class="deposit-header">
+
+<button id="cardCodeBackBtn" class="back-btn">←</button>
+
+<h2 id="cardCodeTitle"> Enter the card code below</h2>
+
+</div>
+
+
+
+<div class="deposit-card">
+
+
+
+<input
+
+id="cardCodeInput"
+
+class="deposit-input"
+
+type="text"
+
+placeholder="Insert card code">
+
+
+
+<button
+
+id="loadCardBtn"
+
+class="deposit-action-btn"
+
+disabled>
+
+
+
+Submit code
+
+
+
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+<!-- CRYPTO DEPOSIT PAGE -->
+
+<div id="cryptoDepositPage" style="display:none; flex-direction:column; padding:20px;">
+
+
+
+<div class="deposit-header">
+
+
+
+<button id="cryptoBackBtn" class="back-btn">←</button>
+
+
+
+<h2>Cryptocurrency Deposit</h2>
+
+
+
+</div>
+
+
+
+<div class="deposit-card">
+
+
+
+<h3>Select coin type</h3>
+
+
+
+<select id="cryptoSelect" class="deposit-select">
+
+
+
+<option value="">Choose Cryptocurrency</option>
+
+
+
+<option>Bitcoin (BTC)</option>
+
+<option>Ethereum (ETH)</option>
+
+<option>Tether (USDT)</option>
+
+<option>USD Coin (USDC)</option>
+
+<option>BNB</option>
+
+<option>Solana (SOL)</option>
+
+<option>XRP</option>
+
+<option>Dogecoin (DOGE)</option>
+
+<option>Litecoin (LTC)</option>
+
+<option>TRON (TRX)</option>
+
+<option>Polygon (POL)</option>
+
+<option>Avalanche (AVAX)</option>
+
+<option>Cardano (ADA)</option>
+
+<option>Toncoin (TON)</option>
+
+<option>Chainlink (LINK)</option>
+
+<option>Stellar (XLM)</option>
+
+<option>Cosmos (ATOM)</option>
+
+<option>Internet Computer (ICP)</option>
+
+<option>Aptos (APT)</option>
+
+<option>Sui (SUI)</option>
+
+
+
+</select>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+<!-- CRYPTO WALLET PAGE -->
+
+<div id="cryptoWalletPage" style="display:none; flex-direction:column; padding:20px;">
+
+
+
+<div class="deposit-header">
+
+
+
+<button id="cryptoWalletBackBtn" class="back-btn">←</button>
+
+
+
+<h2 id="cryptoWalletTitle">
+
+Copy the wallet address below.
+
+</h2>
+
+
+
+</div>
+
+
+
+<div class="deposit-card">
+
+
+
+<div id="cryptoWalletAddress" class="details-box">
+
+
+
+Wallet address
+
+
+
+</div>
+
+
+
+<button
+
+id="copyCryptoBtn"
+
+class="deposit-action-btn">
+
+
+
+Copy
+
+
+
+</button>
+
+
+
+</div>
+
+
+
+</div>
+
+
+
+
+
+
+
+
+
+<!-- MODAL -->
+
+<div class="modal-overlay" id="modalOverlay">
+
+<div class="modal" id="modalBox">
+
+<h3 id="modalMessage"></h3>
+
+<button id="modalOkBtn">Done</button>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+
+
+/* PAGE REFERENCES */
+
+const loginPage=document.getElementById("loginPage");
+
+const dashboardPage=document.getElementById("dashboardPage");
+
+const depositPage=document.getElementById("depositPage");
+
+
+
+const loginBtn=document.getElementById("loginBtn");
+
+const logoutBtn=document.getElementById("logoutBtn");
+
+const depositBtn=document.getElementById("depositBtn");
+
+const depositBackBtn=document.getElementById("depositBackBtn");
+
+
+
+const bankDepositBtn=document.getElementById("bankDepositBtn");
+
+const bankDepositPage=document.getElementById("bankDepositPage");
+
+const bankBackBtn=document.getElementById("bankBackBtn");
+
+
+
+const bankDetailsBox=document.getElementById("bankDetailsBox");
+
+const copyBankBtn=document.getElementById("copyBankBtn");
+
+
+
+const cardDepositBtn=document.getElementById("cardDepositBtn");
+
+const cardDepositPage=document.getElementById("cardDepositPage");
+
+const cardBackBtn=document.getElementById("cardBackBtn");
+
+
+
+const cardTypeSelect=document.getElementById("cardTypeSelect");
+
+
+
+const cardCodePage=document.getElementById("cardCodePage");
+
+const cardCodeBackBtn=document.getElementById("cardCodeBackBtn");
+
+const cardCodeTitle=document.getElementById("cardCodeTitle");
+
+const cardCodeInput=document.getElementById("cardCodeInput");
+
+const loadCardBtn=document.getElementById("loadCardBtn");
+
+
+
+const cryptoDepositBtn=document.getElementById("cryptoDepositBtn");
+
+const cryptoDepositPage=document.getElementById("cryptoDepositPage");
+
+const cryptoBackBtn=document.getElementById("cryptoBackBtn");
+
+const cryptoSelect=document.getElementById("cryptoSelect");
+
+
+
+const cryptoWalletPage=document.getElementById("cryptoWalletPage");
+
+const cryptoWalletBackBtn=document.getElementById("cryptoWalletBackBtn");
+
+const cryptoWalletTitle=document.getElementById("cryptoWalletTitle");
+
+const cryptoWalletAddress=document.getElementById("cryptoWalletAddress");
+
+const copyCryptoBtn=document.getElementById("copyCryptoBtn");
+
+
+
+const loginError=document.getElementById("loginError");
+
+const displayUsername=document.getElementById("displayUsername");
+
+const walletBalance=document.getElementById("walletBalance");
+
+
+
+
+
+
+
+
+
+/* NEW: password toggle */
+
+const togglePasswordBtn=document.getElementById("togglePasswordBtn");
+
+const loginPassword=document.getElementById("loginPassword");
+
+
+
+/* HARDCODED LOGIN */
+
+const FIXED_USERNAME="fgddyugffg@gmail.com";
+
+const FIXED_PASSWORD="Juicewrld12345$$";
+
+
+
+/* MODAL */
+
+const modalOverlay=document.getElementById("modalOverlay");
+
+const modalMessage=document.getElementById("modalMessage");
+
+const modalOkBtn=document.getElementById("modalOkBtn");
+
+
+
+function showModal(message,callback=null){
+
+  modalMessage.innerText=message;
+
+  modalOverlay.style.display="flex";
+
+
+
+  modalOkBtn.onclick=()=>{
+
+    modalOverlay.style.display="none";
+
+    if(callback) callback();
+
+  };
+
+}
+
+
+
+/* PASSWORD TOGGLE */
+
+togglePasswordBtn.onclick=()=>{
+
+  if(loginPassword.type==="password"){
+
+    loginPassword.type="text";
+
+    togglePasswordBtn.innerText="Hide password";
+
+  }else{
+
+    loginPassword.type="password";
+
+    togglePasswordBtn.innerText="Show password";
+
+  }
+
+};
+
+
+
+/* WALLET BALANCE */
+
+function getWalletBalance(){
+
+  return "200,000";
+
+}
+
+
+
+/* ===========================
+
+CARD VALIDATION RULES
+
+=========================== */
+
+
+
+const cardValidationRules={
+
+
+
+"Steam":15,
+
+"Apple Gift Card":16,
+
+"Google Play":16,
+
+"Amazon":16,
+
+"Xbox":25,
+
+"PlayStation":12,
+
+"Razer Gold":16,
+
+"Visa Gift Card":16,
+
+"Mastercard Gift Card":16,
+
+"American Express Gift Card":15,
+
+"eBay":13,
+
+"Walmart":16,
+
+"Target":15,
+
+"Sephora":16,
+
+"Nike":16,
+
+"Roblox":12,
+
+"Fortnite / Epic Games":16,
+
+"Vanilla Gift Card":16,
+
+"Macy's":16,
+
+"Nordstrom":16,
+
+"Best Buy":16,
+
+"Home Depot":16,
+
+"CVS":16,
+
+"Walgreens":16,
+
+"Netflix":11,
+
+"Spotify":12,
+
+"Uber":16,
+
+"Airbnb":16,
+
+"Visa Prepaid":16,
+
+"Mastercard Prepaid":16
+
+
+
+};
+
+
+
+/* ===========================
+
+CRYPTO WALLET ADDRESSES
+
+=========================== */
+
+
+
+const cryptoWalletAddresses={
+
+
+
+"Bitcoin (BTC)":
+
+"bc1qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+
+
+
+"Ethereum (ETH)":
+
+"0x1111111111111111111111111111111111111111",
+
+
+
+"Tether (USDT)":
+
+"TXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+
+
+
+"USD Coin (USDC)":
+
+"0x2222222222222222222222222222222222222222",
+
+
+
+"BNB":
+
+"bnb1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+
+
+
+"Solana (SOL)":
+
+"8Kx6XXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+
+
+
+"XRP":
+
+"rXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+
+
+
+"Dogecoin (DOGE)":
+
+"Dyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+
+
+
+"Litecoin (LTC)":
+
+"ltc1qxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+
+
+
+"TRON (TRX)":
+
+"Tkhdiendgddyuidjd675h8err87h84748huu",
+
+
+
+"Polygon (POL)":
+
+"0xkhhgugyggyggyugggyg567ghbhbjjh",
+
+
+
+"Avalanche (AVAX)":
+
+"0xjhfhdhfbhdfhueiyu74u85u7938y7bdbdjh",
+
+
+
+"Cardano (ADA)":
+
+"addr1q8yg684qskx5hv0jt2lxcuxym52j4ztdnjfpaagfmhq2hqavz0swndd3v2gfgxztjt2lhlez0jg0atghx8uzj8n679lq38l5cs",
+
+
+
+"Toncoin (TON)":
+
+"UQXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+
+
+
+"Chainlink (LINK)":
+
+"0x5555555555555555555555555555555555555555",
+
+
+
+"Stellar (XLM)":
+
+"GBXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+
+
+
+"Cosmos (ATOM)":
+
+"cosmos1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+
+
+
+"Internet Computer (ICP)":
+
+"aaaaa-aa-placeholder-wallet-address",
+
+
+
+"Aptos (APT)":
+
+"0x6666666666666666666666666666666666",
+
+
+
+"Sui (SUI)":
+
+"0x7777777777777777777777777777777777777777"
+
+
+
+};
+
+
+
+/* COINS LIST */
+
+const coinList=[
+
+"BTC","ETH","LTC","DOGE","TRX","BNB","ADA","XRP","SOL","DOT",
+
+"AVAX","MATIC","LINK","SHIB","UNI","XLM","VET","FIL","ICP",
+
+"AAVE","ATOM","ALGO","EGLD","FTM","NEAR"
+
+];
+
+
+
+let currentPrices={};
+
+
+
+/* FETCH LIVE COIN PRICES */
+
+async function fetchCoinPrices(){
+
+
+
+  const coinsIds={
+
+    "BTC":"bitcoin",
+
+    "ETH":"ethereum",
+
+    "LTC":"litecoin",
+
+    "DOGE":"dogecoin",
+
+    "TRX":"tron",
+
+    "BNB":"binancecoin",
+
+    "ADA":"cardano",
+
+    "XRP":"ripple",
+
+    "SOL":"solana",
+
+    "DOT":"polkadot",
+
+    "AVAX":"avalanche-2",
+
+    "MATIC":"matic-network",
+
+    "LINK":"chainlink",
+
+    "SHIB":"shiba-inu",
+
+    "UNI":"uniswap",
+
+    "XLM":"stellar",
+
+    "VET":"vechain",
+
+    "FIL":"filecoin",
+
+    "ICP":"internet-computer",
+
+    "AAVE":"aave",
+
+    "ATOM":"cosmos",
+
+    "ALGO":"algorand",
+
+    "EGLD":"elrond-erd-2",
+
+    "FTM":"fantom",
+
+    "NEAR":"near"
+
+  };
+
+
+
+  const ids=Object.values(coinsIds).join(",");
+
+
+
+  try{
+
+
+
+    const res=await fetch(
+
+      `https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`
+
+    );
+
+
+
+    const data=await res.json();
+
+
+
+    coinList.forEach(c=>{
+
+      currentPrices[c]=data[coinsIds[c]]?.usd||0;
+
+    });
+
+
+
+  }catch(error){
+
+    console.error("Price fetch failed:",error);
+
+  }
+
+}
+
+
+
+fetchCoinPrices();
+
+setInterval(fetchCoinPrices,5000);
+
+
+
+/* COIN DROPDOWN */
+
+const coinSelector=document.getElementById("coinSelector");
+
+const coinDropdown=document.getElementById("coinDropdown");
+
+
+
+const quantityInput=document.getElementById("quantity");
+
+const priceInput=document.getElementById("price");
+
+
+
+let selectedCoin="BTC";
+
+
+
+coinList.forEach(c=>{
+
+
+
+  const div=document.createElement("div");
+
+
+
+  div.dataset.coin=c;
+
+  div.innerText=c;
+
+
+
+  div.onclick=()=>{
+
+
+
+    selectedCoin=c;
+
+
+
+    coinSelector.innerText=c;
+
+
+
+    coinDropdown.style.display="none";
+
+
+
+    updateQuantityPrice();
+
+
+
+  };
+
+
+
+  coinDropdown.appendChild(div);
+
+
+
+});
+
+
+
+coinSelector.onclick=()=>{
+
+
+
+  coinDropdown.style.display=
+
+  coinDropdown.style.display==="block"
+
+  ?"none"
+
+  :"block";
+
+
+
+};
+
+
+
+document.addEventListener("click",e=>{
+
+
+
+  if(
+
+    !coinSelector.contains(e.target)
+
+    &&
+
+    !coinDropdown.contains(e.target)
+
+  ){
+
+    coinDropdown.style.display="none";
+
+  }
+
+
+
+});
+
+
+
+/* LIVE PRICE ↔️ QUANTITY CALCULATION */
+
+function updateQuantityPrice(){
+
+
+
+  if(
+
+    document.activeElement===priceInput
+
+    &&
+
+    priceInput.value
+
+    &&
+
+    currentPrices[selectedCoin]
+
+  ){
+
+
+
+    quantityInput.value=
+
+    (
+
+      parseFloat(priceInput.value)/
+
+      currentPrices[selectedCoin]
+
+    ).toFixed(6);
+
+
+
+  }
+
+
+
+  else if(
+
+    document.activeElement===quantityInput
+
+    &&
+
+    quantityInput.value
+
+    &&
+
+    currentPrices[selectedCoin]
+
+  ){
+
+
+
+    priceInput.value=
+
+    (
+
+      parseFloat(quantityInput.value)*
+
+      currentPrices[selectedCoin]
+
+    ).toFixed(2);
+
+
+
+  }
+
+
+
+}
+
+
+
+/* CLEAR BUTTONS */
+
+const clearPriceBtn=document.getElementById("clearPriceBtn");
+
+const clearQuantityBtn=document.getElementById("clearQuantityBtn");
+
+
+
+function toggleClearButtons(){
+
+
+
+  clearPriceBtn.style.display=
+
+  priceInput.value ? "block" : "none";
+
+
+
+  clearQuantityBtn.style.display=
+
+  quantityInput.value ? "block" : "none";
+
+
+
+}
+
+
+
+clearPriceBtn.onclick=()=>{
+
+
+
+  priceInput.value="";
+
+  quantityInput.value="";
+
+
+
+  toggleClearButtons();
+
+
+
+};
+
+
+
+clearQuantityBtn.onclick=()=>{
+
+
+
+  quantityInput.value="";
+
+  priceInput.value="";
+
+
+
+  toggleClearButtons();
+
+
+
+};
+
+
+
+priceInput.addEventListener("input",()=>{
+
+
+
+  updateQuantityPrice();
+
+  toggleClearButtons();
+
+
+
+});
+
+
+
+quantityInput.addEventListener("input",()=>{
+
+
+
+  updateQuantityPrice();
+
+  toggleClearButtons();
+
+
+
+});
+
+
+
+/* LOAD SESSION */
+
+function loadSession(){
+
+
+
+  const user=sessionStorage.getItem("loggedInUser");
+
+
+
+  if(user===FIXED_USERNAME){
+
+
+
+    displayUsername.innerText=user;
+
+
+
+    walletBalance.innerText=
+
+    `Wallet balance: $${getWalletBalance()}`;
+
+
+
+    loginPage.style.display="none";
+
+    dashboardPage.style.display="flex";
+
+
+
+  }
+
+
+
+}
+
+
+
+/* LOGIN WITH LOADING (4s) */
+
+loginBtn.onclick=()=>{
+
+
+
+  const username=
+
+  document.getElementById("loginUsername").value.trim();
+
+
+
+  const password=
+
+  document.getElementById("loginPassword").value.trim();
+
+
+
+  if(!username || !password){
+
+
+
+    loginError.innerText=
+
+    "Please enter your username and password.";
+
+
+
+    return;
+
+  }
+
+
+
+  if(
+
+    username===FIXED_USERNAME
+
+    &&
+
+    password===FIXED_PASSWORD
+
+  ){
+
+
+
+    loginError.innerText="";
+
+
+
+    // loading overlay
+
+    const loader=document.createElement("div");
+
+    loader.style.position="fixed";
+
+    loader.style.top="0";
+
+    loader.style.left="0";
+
+    loader.style.width="100%";
+
+    loader.style.height="100%";
+
+    loader.style.background="rgba(0,0,0,0.8)";
+
+    loader.style.display="flex";
+
+    loader.style.justifyContent="center";
+
+    loader.style.alignItems="center";
+
+    loader.style.color="#fff";
+
+    loader.style.fontSize="18px";
+
+    loader.style.zIndex="9999";
+
+    loader.innerText="Loading...";
+
+
+
+    document.body.appendChild(loader);
+
+
+
+    setTimeout(()=>{
+
+
+
+      loader.remove();
+
+
+
+      displayUsername.innerText=username;
+
+
+
+      walletBalance.innerText=
+
+      `Wallet balance: $${getWalletBalance()}`;
+
+
+
+      loginPage.style.display="none";
+
+      dashboardPage.style.display="flex";
+
+
+
+      sessionStorage.setItem("loggedInUser",username);
+
+
+
+    },4000);
+
+
+
+  }
+
+
+
+  else{
+
+
+
+    loginError.innerText=
+
+    "Incorrect login credentials";
+
+
+
+  }
+
+
+
+};
+
+
+
+/* LOGOUT */
+
+logoutBtn.onclick=()=>{
+
+
+
+  loginPage.style.display="flex";
+
+  dashboardPage.style.display="none";
+
+
+
+  sessionStorage.removeItem("loggedInUser");
+
+
+
+};
+
+
+
+
+
+/* ===========================
+
+DEPOSIT PAGE NAVIGATION
+
+=========================== */
+
+
+
+depositBtn.onclick=()=>{
+
+
+
+dashboardPage.style.display="none";
+
+depositPage.style.display="flex";
+
+
+
+};
+
+
+
+depositBackBtn.onclick=()=>{
+
+
+
+depositPage.style.display="none";
+
+dashboardPage.style.display="flex";
+
+
+
+};
+
+
+
+/* ===========================
+
+BANK DEPOSIT NAVIGATION
+
+=========================== */
+
+
+
+bankDepositBtn.onclick=()=>{
+
+
+
+depositPage.style.display="none";
+
+bankDepositPage.style.display="flex";
+
+
+
+};
+
+
+
+bankBackBtn.onclick=()=>{
+
+
+
+bankDepositPage.style.display="none";
+
+depositPage.style.display="flex";
+
+
+
+};
+
+
+
+/* ===========================
+
+BANK DETAILS COPY
+
+=========================== */
+
+
+
+copyBankBtn.onclick=async()=>{
+
+
+
+const bankDetails=bankDetailsBox.innerText;
+
+
+
+try{
+
+
+
+await navigator.clipboard.writeText(bankDetails);
+
+
+
+copyBankBtn.innerText="Copied";
+
+
+
+showModal(
+
+"Bank details copied successfully.",
+
+()=>{
+
+
+
+copyBankBtn.innerText="Copy";
+
+
+
+bankDepositPage.style.display="none";
+
+depositPage.style.display="flex";
+
+
+
+}
+
+);
+
+
+
+}catch(error){
+
+
+
+showModal("Unable to copy bank account details.");
+
+
+
+}
+
+
+
+};
+
+
+
+/* ===========================
+
+CARD DEPOSIT NAVIGATION
+
+=========================== */
+
+
+
+cardDepositBtn.onclick=()=>{
+
+
+
+depositPage.style.display="none";
+
+cardDepositPage.style.display="flex";
+
+
+
+};
+
+
+
+cardBackBtn.onclick=()=>{
+
+
+
+cardDepositPage.style.display="none";
+
+depositPage.style.display="flex";
+
+
+
+};
+
+
+
+/* ===========================
+
+CARD CODE PAGE
+
+=========================== */
+
+
+
+let selectedCardType="";
+
+
+
+cardCodeInput.oninput=()=>{
+
+
+
+const requiredLength=
+
+cardValidationRules[selectedCardType]||0;
+
+
+
+const enteredLength=
+
+cardCodeInput.value.trim().length;
+
+
+
+if(enteredLength===requiredLength){
+
+
+
+loadCardBtn.disabled=false;
+
+
+
+loadCardBtn.style.background="#28a745";
+
+
+
+}else{
+
+
+
+loadCardBtn.disabled=true;
+
+
+
+loadCardBtn.style.background="#555";
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+cardTypeSelect.onchange=()=>{
+
+
+
+if(!cardTypeSelect.value) return;
+
+
+
+selectedCardType=cardTypeSelect.value;
+
+
+
+cardCodeTitle.innerText=
+
+`Input your ${selectedCardType} code below`;
+
+
+
+cardCodeInput.value="";
+
+
+
+loadCardBtn.disabled=true;
+
+
+
+loadCardBtn.style.background="#555";
+
+
+
+cardDepositPage.style.display="none";
+
+
+
+cardCodePage.style.display="flex";
+
+
+
+};
+
+
+
+cardCodeBackBtn.onclick=()=>{
+
+
+
+cardCodePage.style.display="none";
+
+
+
+cardDepositPage.style.display="flex";
+
+
+
+cardTypeSelect.selectedIndex=0;
+
+
+
+};
+
+
+
+/* ===========================
+
+LOAD CARD CODE
+
+=========================== */
+
+
+
+loadCardBtn.onclick=()=>{
+
+
+
+showModal(
+
+
+
+"Request submitted funds will be credited to your balance after card is verified.",
+
+
+
+()=>{
+
+
+
+cardCodePage.style.display="none";
+
+
+
+depositPage.style.display="flex";
+
+
+
+cardTypeSelect.selectedIndex=0;
+
+
+
+cardCodeInput.value="";
+
+
+
+loadCardBtn.disabled=true;
+
+
+
+loadCardBtn.style.background="#555";
+
+
+
+cardCodeTitle.innerText="Enter card code below";
+
+
+
+selectedCardType="";
+
+
+
+}
+
+
+
+);
+
+
+
+};
+
+
+
+/* ===========================
+
+CRYPTO DEPOSIT NAVIGATION
+
+=========================== */
+
+
+
+cryptoDepositBtn.onclick=()=>{
+
+
+
+depositPage.style.display="none";
+
+cryptoDepositPage.style.display="flex";
+
+
+
+};
+
+
+
+cryptoBackBtn.onclick=()=>{
+
+
+
+cryptoDepositPage.style.display="none";
+
+depositPage.style.display="flex";
+
+
+
+};
+
+
+
+/* ===========================
+
+CRYPTO WALLET PAGE
+
+=========================== */
+
+
+
+let selectedCrypto="";
+
+
+
+cryptoSelect.onchange=()=>{
+
+
+
+if(!cryptoSelect.value) return;
+
+
+
+selectedCrypto=cryptoSelect.value;
+
+
+
+const symbol=
+
+selectedCrypto.match(/\((.*?)\)/)?.[1] || selectedCrypto;
+
+
+
+cryptoWalletTitle.innerText=
+
+`Copy your ${symbol} wallet address below.`;
+
+
+
+cryptoWalletAddress.innerText=
+
+cryptoWalletAddresses[selectedCrypto] ||
+
+"No wallet address available.";
+
+
+
+copyCryptoBtn.innerText="Copy";
+
+
+
+cryptoDepositPage.style.display="none";
+
+
+
+cryptoWalletPage.style.display="flex";
+
+
+
+};
+
+
+
+cryptoWalletBackBtn.onclick=()=>{
+
+
+
+cryptoWalletPage.style.display="none";
+
+
+
+cryptoDepositPage.style.display="flex";
+
+
+
+cryptoSelect.selectedIndex=0;
+
+
+
+};
+
+
+
+/* ===========================
+
+COPY CRYPTO WALLET ADDRESS
+
+=========================== */
+
+
+
+copyCryptoBtn.onclick=async()=>{
+
+
+
+const walletAddress=cryptoWalletAddress.innerText.trim();
+
+
+
+try{
+
+
+
+await navigator.clipboard.writeText(walletAddress);
+
+
+
+copyCryptoBtn.innerText="Copy";
+
+
+
+showModal(
+
+
+
+"Wallet address copied",
+
+
+
+()=>{
+
+
+
+copyCryptoBtn.innerText="Copy";
+
+
+
+cryptoWalletPage.style.display="none";
+
+
+
+depositPage.style.display="flex";
+
+
+
+cryptoSelect.selectedIndex=0;
+
+
+
+cryptoWalletTitle.innerText=
+
+"Copy your wallet address below.";
+
+
+
+cryptoWalletAddress.innerText=
+
+"Wallet address";
+
+
+
+selectedCrypto="";
+
+
+
+}
+
+
+
+);
+
+
+
+}catch(error){
+
+
+
+showModal("Failed to copy wallet address.");
+
+
+
+}
+
+
+
+};
+
+
+
+
+
+/* ENABLE LIVE ACTIONS */
+
+let actionsEnabled=true;
+
+
+
+/* BUTTON HANDLERS */
+
+function handleActionClick(actionName){
+
+
+
+  const price=priceInput.value;
+
+  const quantity=quantityInput.value;
+
+  const wallet=document.getElementById("walletAddress").value;
+
+
+
+  if(!price || !quantity){
+
+
+
+    showModal("Please enter price and quantity");
+
+
+
+    return;
+
+  }
+
+
+
+  if(actionName==="withdraw"){
+
+
+
+    showModal(
+
+      `Withdrawal request is temporarily suspended.${quantity} ${selectedCoin}`
+
+    );
+
+
+
+  }
+
+
+
+  if(actionName==="send"){
+
+
+
+    if(!wallet){
+
+
+
+      showModal("Please enter your wallet address.");
+
+
+
+      return;
+
+    }
+
+
+
+ showModal(`Submitting your request has been temporarily suspended.`);
+
+
+
+  }
+
+
+
+}
+
+
+
+document.getElementById("withdrawBtn").onclick=
+
+()=>handleActionClick("withdraw");
+
+
+
+document.getElementById("sendBtn").onclick=
+
+()=>handleActionClick("send");
+
+
+
+/* LIVE TRADINGVIEW CHART */
+
+new TradingView.widget({
+
+  autosize:true,
+
+  symbol:"BINANCE:BTCUSDT",
+
+  interval:"1",
+
+  timezone:"Etc/UTC",
+
+  theme:"dark",
+
+  style:"1",
+
+  locale:"en",
+
+  toolbar_bg:"#111",
+
+  enable_publishing:false,
+
+  hide_side_toolbar:false,
+
+  allow_symbol_change:true,
+
+  details:true,
+
+  hotlist:true,
+
+  calendar:true,
+
+  container_id:"liveChart"
+
+});
+
+
+
+/* LOAD SESSION */
+
+loadSession();
+
+
+
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./service-worker.js")
+      .then(registration => {
+        console.log("Service Worker registered:", registration.scope);
+      })
+      .catch(error => {
+        console.error("Service Worker registration failed:", error);
+      });
+  });
+}
+</script>
+
+</body>
+
+</html>
